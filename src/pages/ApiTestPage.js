@@ -143,8 +143,48 @@ const ApiTestPage = () => {
         <h2 className="text-xl font-semibold mb-2">API Configuration</h2>
         <div className="bg-white rounded-lg shadow p-6">
           <p><strong>API URL:</strong> {apiUrl}</p>
+          <p><strong>Environment:</strong> {ENV.ENVIRONMENT}</p>
+          <p><strong>Frontend URL:</strong> {ENV.FRONTEND_URL}</p>
+          <p><strong>Using:</strong> <span className={ENV.IS_DEVELOPMENT ? "text-yellow-600 font-bold" : "text-purple-600 font-bold"}>
+            {ENV.IS_DEVELOPMENT ? "Development API (localhost)" : "Production API (Railway)"}
+          </span></p>
         </div>
       </div>
+      
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold mb-2">Switch Environment</h2>
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="mb-3 text-gray-600">
+            You can switch between development and production environments by running:
+          </p>
+          <div className="bg-gray-800 text-green-400 p-3 rounded-md font-mono text-sm mb-4">
+            <p># Switch to development (localhost)</p>
+            <p>npm run use:dev</p>
+            <p className="mt-2"># Switch to production (Railway)</p>
+            <p>npm run use:prod</p>
+          </div>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
+            onClick={() => {
+              localStorage.setItem('preferred_env', 'development');
+              window.location.reload();
+            }}
+          >
+            Use Development
+          </button>
+          <button
+            className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            onClick={() => {
+              localStorage.setItem('preferred_env', 'production');
+              window.location.reload();
+            }}
+          >
+            Use Production
+          </button>
+          <p className="mt-3 text-sm text-gray-500">Note: This will only update your browser preference. To actually change the API URL, run the npm commands above.</p>
+        </div>
+      </div>
+      
     </div>
   );
 };

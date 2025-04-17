@@ -56,12 +56,45 @@ This project uses environment variables for configuration. For security reasons,
 - `REACT_APP_API_URL`: The URL of the backend API
 - `REACT_APP_ENV`: The current environment (development, production, etc.)
 
+### Switching Environments
+
+This project includes several convenience scripts to easily switch between development and production environments:
+
+```bash
+# Interactive environment switcher
+npm run switch-env
+
+# Quick switch to development (localhost)
+npm run use:dev
+
+# Quick switch to production (Railway)
+npm run use:prod
+
+# Setup environment with guided prompts
+npm run setup-env
+```
+
+When running in development mode, you'll see an environment indicator in the bottom right corner of the application showing which API you're connected to.
+
+### Local vs Production
+
+- **Local Development**: Uses `http://localhost:8000/api` for the backend
+- **Production**: Uses `https://web-production-989cb.up.railway.app/api` for the backend
+
 ### Environment Variable Usage
 
-In your React components, access environment variables using:
+In your React components, access environment variables using the utility:
 
 ```javascript
-const apiUrl = process.env.REACT_APP_API_URL;
+import ENV from '../utils/env';
+
+// Access API URL
+const apiUrl = ENV.API_URL;
+
+// Check environment
+if (ENV.IS_DEVELOPMENT) {
+  // Development-only code
+}
 ```
 
 ### Security Best Practices

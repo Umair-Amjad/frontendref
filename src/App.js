@@ -5,6 +5,7 @@ import PrivateRoute from './components/routing/PrivateRoute';
 import AdminRoute from './components/routing/AdminRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EnvIndicator from './components/EnvIndicator';
 
 // Public Pages of user side
 import Home from './pages/Home';
@@ -150,6 +151,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <ToastContainer />
+          <EnvIndicator />
         </div>
       </Router>
     </AuthProvider>

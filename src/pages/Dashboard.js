@@ -26,6 +26,8 @@ import {
   EnhancedBankWithdrawalNotice,
   CustomerExperienceNotice 
 } from '../components/ui/NoticeCards';
+import { toast } from "react-toastify";
+import api, { imageErrorHandler } from "../services/api";
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -98,17 +100,12 @@ const Dashboard = () => {
       </div>
     );
   }
-
-  // Format date for next ROI release
-  const formatReleaseDate = (dateString) => {
-    if (!dateString) return 'No pending releases';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+  
+  const handleImageError = (e) => {
+    e.target.src = "/assets/images/placeholder.jpg";
+    if (imageErrorHandler.trackError("Referral image failed to load")) {
+      toast.error("Referral image failed to load");
+    }
   };
   
   return (
@@ -150,8 +147,8 @@ const Dashboard = () => {
               value={`$${(dashboardData?.pendingBalance || 0).toFixed(2)}`}
               icon={<FaClock className="h-6 w-6" />}
               color="warning"
-              subtitle={`Next release: ${formatReleaseDate(dashboardData?.nextReleaseDate)}`}
-              actionText={dashboardData?.nextReleaseAmount ? `$${dashboardData.nextReleaseAmount.toFixed(2)} coming soon` : ""}
+              subtitle="All ROI earnings are now immediately available"
+              actionText="No waiting period"
             />
             
             <DashboardCard

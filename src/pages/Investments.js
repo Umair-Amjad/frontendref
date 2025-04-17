@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { FaArrowUp, FaArrowDown, FaClock } from 'react-icons/fa';
-import { investmentAPI } from '../services/api';
+import { investmentAPI, imageErrorHandler } from '../services/api';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
@@ -57,15 +57,34 @@ const Investments = () => {
   };
 
   const calculateProgress = (investment) => {
-    if (!investment || !investment.startDate || !investment.endDate) return 0;
+    if (!investment || !investment.startDate || !investment.endDate) {
+      return {
+        timeProgress: 0,
+        earningsProgress: 0,
+        earnedProfit: 0
+      };
+    }
     
     // Calculate time-based progress
     const startDate = new Date(investment.startDate);
     const endDate = new Date(investment.endDate);
     const currentDate = new Date();
     
-    if (currentDate < startDate) return 0;
-    if (currentDate > endDate) return 100;
+    if (currentDate < startDate) {
+      return {
+        timeProgress: 0,
+        earningsProgress: 0,
+        earnedProfit: 0
+      };
+    }
+    
+    if (currentDate > endDate) {
+      return {
+        timeProgress: 100,
+        earningsProgress: 100,
+        earnedProfit: investment.expectedReturn ? (investment.expectedReturn - investment.amount) : 0
+      };
+    }
     
     const totalDuration = endDate - startDate;
     const elapsed = currentDate - startDate;
@@ -73,9 +92,12 @@ const Investments = () => {
     
     // Calculate earnings-based progress
     // Assuming the investment earns linearly over time
-    const totalProfit = investment.expectedReturn - investment.amount;
-    const earnedProfit = (totalProfit * timeProgress) / 100;
-    const earningsProgress = Math.round((earnedProfit / totalProfit) * 100);
+    const totalProfit = investment.expectedReturn && investment.amount 
+      ? investment.expectedReturn - investment.amount 
+      : 0;
+      
+    const earnedProfit = totalProfit ? (totalProfit * timeProgress) / 100 : 0;
+    const earningsProgress = totalProfit ? Math.round((earnedProfit / totalProfit) * 100) : 0;
     
     return {
       timeProgress,
@@ -100,6 +122,13 @@ const Investments = () => {
     return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>;
   };
 
+  const handleImageError = (e) => {
+    e.target.src = "/assets/images/placeholder.jpg";
+    if (imageErrorHandler.trackError("Investment image failed to load")) {
+      toast.error("Investment image failed to load");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">My Investments</h1>
@@ -113,19 +142,19 @@ const Investments = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-lg font-semibold mb-2">Total Invested</h2>
-          <p className="text-3xl font-bold text-gray-800">${totalInvested.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-gray-800">${(totalInvested || 0).toFixed(2)}</p>
           <p className="text-sm text-gray-500 mt-1">Across all plans</p>
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-lg font-semibold mb-2">Expected Profit</h2>
-          <p className="text-3xl font-bold text-green-600">+${totalProfit.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-green-600">+${(totalProfit || 0).toFixed(2)}</p>
           <p className="text-sm text-gray-500 mt-1">Potential earnings</p>
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-lg font-semibold mb-2">Active Investments</h2>
-          <p className="text-3xl font-bold text-blue-600">{activeInvestments}</p>
+          <p className="text-3xl font-bold text-blue-600">{activeInvestments || 0}</p>
           <p className="text-sm text-gray-500 mt-1">Currently running plans</p>
         </div>
       </div>
@@ -211,15 +240,15 @@ const Investments = () => {
                 <div className="grid grid-cols-3 gap-4 mb-3">
                   <div>
                     <p className="text-xs text-gray-500">Amount</p>
-                    <p className="text-sm font-medium">${investment.amount.toFixed(2)}</p>
+                    <p className="text-sm font-medium">${(investment.amount || 0).toFixed(2)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Returns</p>
-                    <p className="text-sm font-medium">{investment.returns}%</p>
+                    <p className="text-sm font-medium">{investment.returns || 0}%</p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Payment Method</p>
-                    <p className="text-sm font-medium">{investment.paymentMethod}</p>
+                    <p className="text-sm font-medium">{investment.paymentMethod || 'Unknown'}</p>
                   </div>
                 </div>
                 
@@ -237,8 +266,8 @@ const Investments = () => {
                       <div className="flex justify-between text-xs text-gray-500 mb-1">
                         <span>Earnings Progress</span>
                         <span>
-                          ${calculateProgress(investment).earnedProfit.toFixed(2)} / 
-                          ${(investment.expectedReturn - investment.amount || 0).toFixed(2)}
+                          ${(calculateProgress(investment).earnedProfit || 0).toFixed(2)} / 
+                          ${((investment.expectedReturn || 0) - (investment.amount || 0)).toFixed(2)}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -266,13 +295,13 @@ const Investments = () => {
                       <div>
                         <p className="text-xs text-gray-500">Expected Return</p>
                         <p className="text-sm font-medium text-green-600">
-                          ${investment.expectedReturn.toFixed(2)}
+                          ${(investment.expectedReturn || 0).toFixed(2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">Profit</p>
                         <p className="text-sm font-medium text-green-600">
-                          +${(investment.expectedReturn - investment.amount).toFixed(2)}
+                          +${((investment.expectedReturn || 0) - (investment.amount || 0)).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -284,13 +313,13 @@ const Investments = () => {
                     <div>
                       <p className="text-xs text-gray-500">Final Return</p>
                       <p className="text-sm font-medium text-green-600">
-                        ${investment.expectedReturn.toFixed(2)}
+                        ${(investment.expectedReturn || 0).toFixed(2)}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Profit</p>
                       <p className="text-sm font-medium text-green-600">
-                        +${(investment.expectedReturn - investment.amount).toFixed(2)}
+                        +${((investment.expectedReturn || 0) - (investment.amount || 0)).toFixed(2)}
                       </p>
                     </div>
                   </div>

@@ -47,7 +47,7 @@ const ReferralEarningsExplanation = () => {
       </h3>
       <p className="text-sm text-green-700 mt-1">
         When someone invests using your referral code, you instantly earn a commission (5%) that's immediately added to your withdrawable balance.
-        This is different from ROI earnings which go through a 3-4 day holding period before becoming withdrawable.
+        All earnings, including both referral commissions and ROI earnings, are now immediately available for withdrawal.
       </p>
     </div>
   );
@@ -280,7 +280,7 @@ const Withdrawals = () => {
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col">
           <h3 className="text-lg font-medium text-gray-900 mb-2">Pending ROI</h3>
           <div className="text-3xl font-bold text-amber-600 mb-1">{formatCurrency(pendingBalance)}</div>
-          <p className="text-sm text-gray-500">Will be available in 3-4 days</p>
+          <p className="text-sm text-gray-500">All ROI earnings are now immediately available</p>
         </div>
       </div>
       

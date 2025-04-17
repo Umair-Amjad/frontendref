@@ -509,7 +509,7 @@ const WithdrawalForm = ({
                   <p className="font-medium mb-1">Important Notes</p>
                   <p className="mb-1">• Withdrawal requests are processed within 24-48 hours</p>
                   <p className="mb-1">• Referral earnings are available for immediate withdrawal</p>
-                  <p>• ROI earnings have a 3-4 day holding period before becoming withdrawable</p>
+                  <p>• ROI earnings are now immediately available for withdrawal</p>
                 </div>
               </div>
             </div>

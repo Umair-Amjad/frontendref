@@ -153,4 +153,21 @@ const api = {
   getUserWithdrawals: () => withdrawalAPI.getUserWithdrawals()
 };
 
+// Image error counter utility
+let imageErrorCount = 0;
+const MAX_IMAGE_ERROR_TOASTS = 3;
+
+export const imageErrorHandler = {
+  trackError: (errorMessage) => {
+    imageErrorCount++;
+    if (imageErrorCount <= MAX_IMAGE_ERROR_TOASTS) {
+      return true; // Show toast
+    }
+    return false; // Don't show toast
+  },
+  reset: () => {
+    imageErrorCount = 0;
+  }
+};
+
 export default api; 

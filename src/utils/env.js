@@ -2,6 +2,7 @@
  * Environment variables utility
  * 
  * This utility provides safer access to environment variables with fallbacks
+ * and better environment detection
  */
 
 /**
@@ -15,13 +16,41 @@ export const getEnv = (key, fallback = '') => {
 };
 
 /**
- * Common environment variables
+ * Detect if we are in a production environment
+ * Checks both explicit environment variables and hostname
+ */
+export const isProduction = () => {
+  // Check if we're on Vercel or other production hosting
+  const isProductionHost = 
+    window.location.hostname === 'frontendref.vercel.app' || 
+    !window.location.hostname.includes('localhost');
+  
+  // Check if we have an explicit environment variable
+  const hasProductionFlag = getEnv('REACT_APP_ENV') === 'production';
+  
+  return hasProductionFlag || isProductionHost;
+};
+
+/**
+ * Common environment variables with smart defaults
  */
 export const ENV = {
-  API_URL: getEnv('REACT_APP_API_URL', 'https://web-production-989cb.up.railway.app/api'),
-  ENVIRONMENT: getEnv('REACT_APP_ENV', 'production'),
-  IS_DEVELOPMENT: getEnv('REACT_APP_ENV', 'production') === 'development',
-  IS_PRODUCTION: getEnv('REACT_APP_ENV', 'production') === 'production',
+  // For API_URL: use environment variable, or detect based on hostname
+  API_URL: getEnv('REACT_APP_API_URL', 
+    isProduction() 
+      ? 'https://web-production-989cb.up.railway.app/api'
+      : 'http://localhost:8000/api'
+  ),
+  
+  // Environment flags
+  ENVIRONMENT: getEnv('REACT_APP_ENV', isProduction() ? 'production' : 'development'),
+  IS_DEVELOPMENT: !isProduction(),
+  IS_PRODUCTION: isProduction(),
+  
+  // Frontend URL for reference
+  FRONTEND_URL: isProduction() 
+    ? 'https://frontendref.vercel.app'
+    : 'http://localhost:3000'
 };
 
 export default ENV; 

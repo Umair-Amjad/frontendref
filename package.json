@@ -32,7 +32,10 @@
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "deploy": "npm run build",
-    "setup-env": "node setup-env.js"
+    "setup-env": "node setup-env.js",
+    "switch-env": "node switch-env.js",
+    "use:dev": "node -e \"require('fs').writeFileSync('.env.local', 'REACT_APP_API_URL=http://localhost:8000/api\\nREACT_APP_ENV=development')\" && echo Switched to development environment",
+    "use:prod": "node -e \"require('fs').writeFileSync('.env.local', 'REACT_APP_API_URL=https://web-production-989cb.up.railway.app/api\\nREACT_APP_ENV=production')\" && echo Switched to production environment"
   },
   "eslintConfig": {
     "extends": [

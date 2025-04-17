@@ -14,24 +14,33 @@ const rl = readline.createInterface({
 
 // Default values
 const defaultValues = {
-  REACT_APP_API_URL: 'https://web-production-989cb.up.railway.app/api',
+  REACT_APP_API_URL: 'http://localhost:8000/api',
   REACT_APP_ENV: 'development'
+};
+
+// Production values (for reference)
+const productionValues = {
+  REACT_APP_API_URL: 'https://web-production-989cb.up.railway.app/api',
+  REACT_APP_ENV: 'production'
 };
 
 console.log('\n=== Environment Setup ===\n');
 console.log('This script will help you create your .env.local file with your API URL and settings.');
-console.log('Press Enter to keep the default value shown in brackets.\n');
+console.log('Press Enter to keep the default value shown in brackets.');
+console.log('\nFor local development, use localhost. For production testing, use the production URL.\n');
 
 const questions = [
   {
     name: 'REACT_APP_API_URL',
     message: 'API URL',
-    default: defaultValues.REACT_APP_API_URL
+    default: defaultValues.REACT_APP_API_URL,
+    help: `Use '${defaultValues.REACT_APP_API_URL}' for local development or '${productionValues.REACT_APP_API_URL}' for production`
   },
   {
     name: 'REACT_APP_ENV',
     message: 'Environment (development/production)',
-    default: defaultValues.REACT_APP_ENV
+    default: defaultValues.REACT_APP_ENV,
+    help: 'development = local backend, production = hosted backend'
   }
 ];
 
@@ -44,6 +53,7 @@ const askQuestion = (index) => {
   }
 
   const question = questions[index];
+  console.log(`\n${question.help}`);
   rl.question(`${question.message} [${question.default}]: `, (answer) => {
     answers[question.name] = answer.trim() || question.default;
     askQuestion(index + 1);
@@ -61,6 +71,14 @@ const writeEnvFile = () => {
   fs.writeFileSync(envPath, envContent);
   console.log(`\n✅ Created .env.local file with your settings!`);
   console.log(`File saved to: ${envPath}\n`);
+  
+  // Show a message about what environment they've chosen
+  if (answers.REACT_APP_ENV === 'development' && answers.REACT_APP_API_URL.includes('localhost')) {
+    console.log('📡 You are set up for local development. Make sure your backend is running on localhost.');
+  } else if (answers.REACT_APP_ENV === 'production' || answers.REACT_APP_API_URL.includes('railway')) {
+    console.log('🌐 You are set up to use the production backend at Railway.');
+  }
+  
   rl.close();
 };
 

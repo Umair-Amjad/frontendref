@@ -5,6 +5,7 @@ import { FaCheck, FaTimes, FaSpinner, FaEye, FaMoneyBillWave, FaUser } from 'rea
 import { toast } from 'react-toastify';
 import { formatDistanceToNow } from 'date-fns';
 import Modal from '../../components/Modal';
+import { imageErrorHandler } from '../../services/api';
 
 const Investments = () => {
   const [investments, setInvestments] = useState([]);
@@ -252,15 +253,17 @@ const Investments = () => {
                       <div className="flex items-center">
                         <div className="relative">
                           <img 
-                            src={`${process.env.REACT_APP_API_URL || 'web-production-989cb.up.railway.app'}/${investment.transactionScreenshot}`} 
+                            src={`${process.env.REACT_APP_API_URL || 'https://web-production-989cb.up.railway.app'}/uploads/${investment.transactionScreenshot?.split('/').pop().replace('uploads/transactions/', '')}`} 
                             alt="Transaction Screenshot" 
                             className="h-24 w-auto border-2 border-blue-300 rounded cursor-pointer hover:border-blue-500 hover:shadow-md transition-all"
                             onClick={() => openDetailsModal(investment)}
                             onError={(e) => {
-                              console.error('Image load error:', `${process.env.REACT_APP_API_URL || 'web-production-989cb.up.railway.app'}/${investment.transactionScreenshot}`);
+                              console.error('Investment image load error:', investment.transactionScreenshot);
                               e.target.onerror = null;
-                              e.target.src = 'https://via.placeholder.com/150?text=Image+Error';
-                              toast.error('Error loading transaction image. Please check server configuration.');
+                              e.target.src = 'https://via.placeholder.com/800x600?text=Image+Error';
+                              if (imageErrorHandler.trackError(`Failed to load ${investment.transactionScreenshot}`)) {
+                                toast.error('Error loading full size transaction image. Please check server configuration.');
+                              }
                             }}
                           />
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -364,7 +367,7 @@ const Investments = () => {
                   <h3 className="text-lg font-semibold mt-4 mb-2">Transaction Screenshot</h3>
                   <div className="border rounded overflow-hidden">
                     <img 
-                      src={`${process.env.REACT_APP_API_URL || 'web-production-989cb.up.railway.app'}/${selectedInvestment.transactionScreenshot}`}
+                      src={`${process.env.REACT_APP_API_URL || 'https://web-production-989cb.up.railway.app'}/uploads/${selectedInvestment.transactionScreenshot?.split('/').pop().replace('uploads/transactions/', '')}`}
                       alt="Transaction Screenshot"
                       className="max-w-full"
                     />

@@ -15,5 +15,9 @@
   ],
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "env": {
+    "REACT_APP_API_URL": "https://web-production-989cb.up.railway.app/api",
+    "REACT_APP_ENV": "production"
+  }
 } 
